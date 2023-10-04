@@ -1,0 +1,61 @@
+logLevel: debug
+
+httpServerReadTimeout: 30
+httpServerWriteTimeout: 30
+httpServerPort: 8088
+httpDebugPort: 8090
+
+timeZone: "UTC"
+
+redis:
+  username: ""
+  password: ""
+  readTimeout: 2s
+  writeTimeout: 2s
+  dialTimeout: 3s
+  poolSize: 100
+  address: localhost:6379
+
+rateLimiter:
+  limit: 10 # 10 requests per second
+
+mongodb:
+  url: mongodb://localhost:27017
+  user: vlad
+  password: sport
+  timeout: 2s
+  connectTimeout: 5s
+  socketTimeout: 2s
+  maxPoolSize: 10
+
+rabbitmq:
+  url: amqp://vlad:sport@localhost:5672
+  timeout: 2s
+  queues:
+    htafc:
+      name: htafc-feeds
+      durable: true # Indicates whether the queue survives server restarts
+      autoDelete: false # Indicates whether the queue is automatically deleted when it has no consumers
+      exclusive: false # Indicates whether the queue can be accessed only by the connection that declared it
+      noWait: false # Indicates whether the queue declaration should be synchronous
+  consumers:
+    htafc:
+      name: feed-transformer
+      autoAck: false # Auto acknowledgment setting (false means manual acknowledgment)
+      exclusive: false # Exclusive consumer (false means the queue can be accessed by other consumers)
+      noLocal: false # No-local consumer (false means the consumer can receive its own messages)
+      noWait: false # No-wait setting for consumer declaration (false means synchronous declaration)
+
+feedProviders:
+  htafc:
+    address: https://www.htafc.com
+    timeout: 5s
+    circuitBreaker:
+      # Time interval for resetting counters in the Closed state
+      interval: 10s
+      # Time after which to transition from Open to Half-open state
+      timeout: 12s
+      # Fraction of unsuccessful requests that triggers a state change from Closed to Open
+      failureRatio: 0.6
+      # Minimum total request count for calculating failureRatio that triggers a state change from Closed to Open
+      totalRequestCount: 2

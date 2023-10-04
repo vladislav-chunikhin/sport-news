@@ -1,0 +1,22 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+.env
+coverage.out
+
+# IntelliJ
+.idea
+
+/feed-fetcher/config/local.yaml
+/feed-service/config/local.yaml
+/feed-transformer/config/local.yaml

@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.9-management
+    container_name: rabbitmq
+    ports:
+      - ${RABBITMQ_PORT}:${RABBITMQ_PORT}
+      - ${RABBITMQ_UI_PORT}:${RABBITMQ_UI_PORT}
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    healthcheck:
+      test: [ "CMD-SHELL", "rabbitmqctl ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  feed-fetcher:
+    image: ${PROJECT_NAME}/${APP_NAME}:${APP_VERSION}
+    container_name: ${APP_NAME}
+    ports:
+      - ${APP_MAINTENANCE_PORT}:${APP_MAINTENANCE_PORT}
+      - ${APP_PORT}:${APP_PORT}
+    environment:
+      CONFIG_FILE: ./config/docker.yaml
+    depends_on:
+      rabbitmq:
+        condition: service_healthy

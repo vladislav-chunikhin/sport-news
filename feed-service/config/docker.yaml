@@ -1,0 +1,17 @@
+logLevel: debug
+
+httpServerReadTimeout: 30
+httpServerWriteTimeout: 30
+httpServerPort: 8084
+httpDebugPort: 8086
+
+timeZone: "UTC"
+
+mongodb:
+  url: mongodb://mongodb:27017
+  user: vlad
+  password: sport
+  timeout: 2s
+  connectTimeout: 5s
+  socketTimeout: 2s
+  maxPoolSize: 10

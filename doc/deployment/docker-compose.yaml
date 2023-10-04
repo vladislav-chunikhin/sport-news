@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7.0-alpine
+    container_name: redis
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  rabbitmq:
+    image: rabbitmq:3.9-management
+    container_name: rabbitmq
+    ports:
+      - ${RABBITMQ_PORT}:${RABBITMQ_PORT}
+      - ${RABBITMQ_UI_PORT}:${RABBITMQ_UI_PORT}
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    healthcheck:
+      test: [ "CMD-SHELL", "rabbitmqctl ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  mongodb:
+    image: mongo:6.0.8
+    container_name: mongodb
+    ports:
+      - ${MONGO_PORT}:${MONGO_PORT}
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    healthcheck:
+      test: echo 'db.runCommand({serverStatus:1}).ok' | mongosh admin -u $MONGO_USERNAME -p $MONGO_PASSWORD --quiet | grep 1
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  feed-transformer:
+    image: ${PROJECT_NAME}/${APP_TRANSFORMER_NAME}:${APP_VERSION}
+    container_name: ${APP_TRANSFORMER_NAME}
+    ports:
+      - ${APP_TRANSFORMER_MAINTENANCE_PORT}:${APP_TRANSFORMER_MAINTENANCE_PORT}
+      - ${APP_TRANSFORMER_PORT}:${APP_TRANSFORMER_PORT}
+    environment:
+      CONFIG_FILE: ./config/docker.yaml
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  feed-fetcher:
+    image: ${PROJECT_NAME}/${APP_FETCHER_NAME}:${APP_VERSION}
+    container_name: ${APP_FETCHER_NAME}
+    ports:
+      - ${APP_FETCHER_MAINTENANCE_PORT}:${APP_FETCHER_MAINTENANCE_PORT}
+      - ${APP_FETCHER_PORT}:${APP_FETCHER_PORT}
+    environment:
+      CONFIG_FILE: ./config/docker.yaml
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  feed-service:
+    image: ${PROJECT_NAME}/${APP_FEED_NAME}:${APP_VERSION}
+    container_name: ${APP_FEED_NAME}
+    ports:
+      - ${APP_FEED_MAINTENANCE_PORT}:${APP_FEED_MAINTENANCE_PORT}
+      - ${APP_FEED_PORT}:${APP_FEED_PORT}
+    environment:
+      CONFIG_FILE: ./config/docker.yaml
+    depends_on:
+      mongodb:
+        condition: service_healthy

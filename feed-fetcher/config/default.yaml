@@ -1,0 +1,37 @@
+logLevel: debug
+
+httpServerReadTimeout: 30
+httpServerWriteTimeout: 30
+httpServerPort: 8080
+httpDebugPort: 8082
+
+timeZone: "UTC"
+
+worker:
+  interval: 30s
+
+rabbitmq:
+  url: amqp://vlad:sport@localhost:5672
+  timeout: 2s
+  queues:
+    htafc:
+      name: htafc-feeds
+      durable: true # Indicates whether the queue survives server restarts
+      autoDelete: false # Indicates whether the queue is automatically deleted when it has no consumers
+      exclusive: false # Indicates whether the queue can be accessed only by the connection that declared it
+      noWait: false # Indicates whether the queue declaration should be synchronous
+
+feedProviders:
+  htafc:
+    address: https://www.htafc.com
+    timeout: 5s
+    batchSize: 100
+    circuitBreaker:
+      # Time interval for resetting counters in the Closed state
+      interval: 90s
+      # Time after which to transition from Open to Half-open state
+      timeout: 92s
+      # Fraction of unsuccessful requests that triggers a state change from Closed to Open
+      failureRatio: 0.6
+      # Minimum total request count for calculating failureRatio that triggers a state change from Closed to Open
+      totalRequestCount: 2

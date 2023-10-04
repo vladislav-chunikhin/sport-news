@@ -1,0 +1,61 @@
+{
+	"info": {
+		"_postman_id": "433eb52a-316b-4614-a645-d0b5881eea39",
+		"name": "sport-news",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24461465"
+	},
+	"item": [
+		{
+			"name": "getAllArticles",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8084/api/feed/v1/news?limit=50",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8084",
+					"path": [
+						"api",
+						"feed",
+						"v1",
+						"news"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "50"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getArticleByID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8084/api/feed/v1/news/64dcc2326c1e91ddcad83046",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8084",
+					"path": [
+						"api",
+						"feed",
+						"v1",
+						"news",
+						"64dcc2326c1e91ddcad83046"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
