@@ -21,7 +21,7 @@ Before you begin, ensure you have the following installed:
     1. go to the root of the project ```cd feed-service```
     2. run cmd ```make build-image``` to build image
 4. Deploy sport news application
-    1. go to the root of the current file ```cd doc/deployment```
+    1. go to the root of the current file ```cd deployment```
     2. run cmd ```make deploy``` to deploy application
 5. After testing, you can remove containers
     1. run cmd ```make delete``` to delete containers

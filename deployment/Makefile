@@ -18,10 +18,6 @@ APP_FEED_NAME ?= feed-service
 APP_FEED_PORT ?= 8084
 APP_FEED_MAINTENANCE_PORT ?= 8086
 
-BUILD_DIR ?= "./cmd/app"
-OUTPUT_BINARY ?= "build/output/main"
-DOCKERFILE_NAME ?= build/Dockerfile
-
 MONGO_USERNAME ?= vlad
 MONGO_PASSWORD ?= sport
 MONGO_PORT ?= 27017
@@ -45,8 +41,8 @@ help: Makefile
 .PHONY: deploy
 deploy: ## Deploy all services
 	@echo 'Deploying containers'
-	docker-compose -f docker-compose.yaml -p ${PROJECT_NAME} up -d
+	docker compose -f docker-compose.yaml -p ${PROJECT_NAME} up -d
 
 .PHONY: delete
 delete: ## Delete the deployed services
-	@docker-compose -f docker-compose.yaml -p ${PROJECT_NAME} rm -sf
+	@docker compose -f docker-compose.yaml -p ${PROJECT_NAME} rm -sf
