@@ -26,7 +26,9 @@ func main() {
 		log.Fatalf("config load error: %v", err)
 	}
 
-	config.AppConfigure(cfg)
+	if err = config.AppConfigure(cfg); err != nil {
+		log.Fatalf("config init error: %v", err)
+	}
 
 	if err = a.Init(); err != nil {
 		log.Fatalf("app init error: %v", err)

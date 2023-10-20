@@ -54,7 +54,11 @@ type FeedProviderConfig struct {
 	CircuitBreaker circuitbreaker.Config `yaml:"circuitBreaker"`
 }
 
-func AppConfigure(cfg *Config) {
+func AppConfigure(cfg *Config) error {
+	if cfg == nil || cfg.App == nil {
+		return fmt.Errorf("nil config")
+	}
+
 	cfg.App.LoggerLevel = cfg.LogLevel
 	cfg.App.HTTPServerReadTimeout = cfg.HTTPServerReadTimeout
 	cfg.App.HTTPServerWriteTimeout = cfg.HTTPServerWriteTimeout
@@ -65,4 +69,6 @@ func AppConfigure(cfg *Config) {
 	if cfg.HTTPDebugPort != 0 {
 		cfg.App.MtPort = fmt.Sprintf("%d", cfg.HTTPDebugPort)
 	}
+
+	return nil
 }

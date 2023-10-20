@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   redis:
-    image: redis:7.0-alpine
+    image: redis:${REDIS_IMAGE_TAG}
     container_name: ${REDIS_CONTAINER_NAME}
     ports:
       - ${REDIS_PORT}:${REDIS_PORT}
@@ -12,10 +12,10 @@ services:
       timeout: 5s
       retries: 3
     networks:
-      local-sport-news:
+      sport-news-app:
 
   rabbitmq:
-    image: rabbitmq:3.9-management
+    image: rabbitmq:${RABBITMQ_IMAGE_TAG}
     container_name: ${RABBITMQ_CONTAINER_NAME}
     ports:
       - ${RABBITMQ_PORT}:${RABBITMQ_PORT}
@@ -29,10 +29,10 @@ services:
       timeout: 5s
       retries: 3
     networks:
-      local-sport-news:
+      sport-news-app:
 
   mongodb:
-    image: mongo:6.0.8
+    image: mongo:${MONGO_IMAGE_TAG}
     container_name: ${MONGO_CONTAINER_NAME}
     ports:
       - ${MONGO_PORT}:${MONGO_PORT}
@@ -49,7 +49,7 @@ services:
       - mongo-data:/data/db
       - mongo-config:/data/configdb
     networks:
-      local-sport-news:
+      sport-news-app:
 
   feed-transformer:
     image: ${PROJECT_NAME}/${APP_TRANSFORMER_NAME}:${APP_VERSION}
@@ -60,7 +60,7 @@ services:
     environment:
       CONFIG_FILE: ./config/docker.yaml
     networks:
-      local-sport-news:
+      sport-news-app:
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -78,7 +78,7 @@ services:
     environment:
       CONFIG_FILE: ./config/docker.yaml
     networks:
-      local-sport-news:
+      sport-news-app:
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -92,7 +92,7 @@ services:
     environment:
       CONFIG_FILE: ./config/docker.yaml
     networks:
-      local-sport-news:
+      sport-news-app:
     depends_on:
       mongodb:
         condition: service_healthy
@@ -102,4 +102,4 @@ volumes:
   mongo-config:
 
 networks:
-  local-sport-news:
+  sport-news-app:
