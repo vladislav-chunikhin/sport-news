@@ -21,9 +21,25 @@ help: Makefile
 	@awk -F ':.*?## ' '/^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 	@echo
 
+# Validate the project structure
+.PHONY: validate-structure
+validate-structure: ## Validate the existence of directories and files
+	@echo 'Validating directories and files'
+	@for service in $(SERVICES); do \
+		if [ ! -d "../$$service" ]; then \
+			echo "Directory ../$$service does not exist"; \
+			exit 1; \
+		fi; \
+		if [ ! -f "../$$service/Makefile" ]; then \
+        	echo "File ../$$service/Makefile does not exist"; \
+        	exit 1; \
+        fi; \
+	done
+	@echo 'All directories and files exist'
+
 # Build images
 .PHONY: build-images
-build-images: ## Build all images
+build-images: validate-structure ## Build all images
 	@echo 'Building images'
 	@for service in $(SERVICES); do \
 	    echo "Building $$service"; \
