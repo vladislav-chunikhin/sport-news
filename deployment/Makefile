@@ -3,39 +3,6 @@ ifneq ("$(wildcard .env)","")
     include .env
 endif
 
-# Default project variables
-PROJECT_NAME ?= sport-news
-APP_VERSION ?= local
-
-# Transformer variables
-APP_TRANSFORMER_NAME ?= feed-transformer
-APP_TRANSFORMER_PORT ?= 8088
-APP_TRANSFORMER_MAINTENANCE_PORT ?= 8090
-
-# Fetcher variables
-APP_FETCHER_NAME ?= feed-fetcher
-APP_FETCHER_PORT ?= 8080
-APP_FETCHER_MAINTENANCE_PORT ?= 8082
-
-# Feed service variables
-APP_FEED_NAME ?= feed-service
-APP_FEED_PORT ?= 8084
-APP_FEED_MAINTENANCE_PORT ?= 8086
-
-# MongoDB variables
-MONGO_USERNAME ?= vlad
-MONGO_PASSWORD ?= sport
-MONGO_PORT ?= 27017
-
-# RabbitMQ variables
-RABBITMQ_USERNAME ?= vlad
-RABBITMQ_PASSWORD ?= sport
-RABBITMQ_PORT ?= 5672
-RABBITMQ_UI_PORT ?= 15672
-
-# Redis variables
-REDIS_PORT ?= 6379
-
 # Docker
 DOCKER_COMPOSE := docker compose -f docker-compose.yaml -p ${PROJECT_NAME}
 
@@ -65,7 +32,7 @@ build-images: ## Build all images
 
 # Deploy target
 .PHONY: deploy-local
-deploy-local: ## Deploy all services locally
+deploy-local: build-images ## Deploy all services locally (default target)
 	@echo 'Deploying containers'
 	$(DOCKER_COMPOSE) up -d
 
@@ -73,6 +40,14 @@ deploy-local: ## Deploy all services locally
 .PHONY: delete-local
 delete-local: ## Delete the deployed services locally
 	$(DOCKER_COMPOSE) rm -sf
+
+# Delete images
+.PHONY: delete-images
+delete-images: ## Delete images
+	@echo 'Deleting images'
+	@for service in $(SERVICES); do \
+	    docker rmi ${PROJECT_NAME}/$$service:${APP_VERSION}; \
+	done
 
 # Set the default target to 'deploy-local'
 .DEFAULT_GOAL := deploy-local
