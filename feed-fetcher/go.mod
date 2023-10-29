@@ -7,7 +7,7 @@ require (
 	github.com/jasonlvhit/gocron v0.0.1
 	github.com/rabbitmq/amqp091-go v1.8.1
 	github.com/stretchr/testify v1.8.4
-	github.com/vladislav-chunikhin/lib-go v0.1.0-alpha
+	github.com/vladislav-chunikhin/lib-go v0.2.0-alpha
 )
 
 require (

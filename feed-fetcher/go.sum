@@ -38,8 +38,8 @@ github.com/stretchr/testify v1.7.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/
 github.com/stretchr/testify v1.8.0/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO+kdMU+MU=
 github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcUk=
 github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
-github.com/vladislav-chunikhin/lib-go v0.1.0-alpha h1:fQOB+V7lspY2k05PuTs8CHj9lja5cfZpHpOl0wZCzpg=
-github.com/vladislav-chunikhin/lib-go v0.1.0-alpha/go.mod h1:yU7iBNiYnxSCkCBaqy5W+1F+K2nqi4mkCE4Ya1k+TWg=
+github.com/vladislav-chunikhin/lib-go v0.2.0-alpha h1:DkA7i1lII8z7rsTJe75y/smyYPfthIn8sR8cSBsUvR0=
+github.com/vladislav-chunikhin/lib-go v0.2.0-alpha/go.mod h1:yU7iBNiYnxSCkCBaqy5W+1F+K2nqi4mkCE4Ya1k+TWg=
 go.uber.org/automaxprocs v1.5.3 h1:kWazyxZUrS3Gs4qUpbwo5kEIMGe/DAvi5Z4tl2NW4j8=
 go.uber.org/automaxprocs v1.5.3/go.mod h1:eRbA25aqJrxAbsLO0xy5jVwPt7FQnRgjW+efnwa1WM0=
 go.uber.org/goleak v1.2.1 h1:NBol2c7O1ZokfZ0LEU9K6Whx/KnwvepVetCUhtKja4A=

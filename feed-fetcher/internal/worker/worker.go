@@ -7,6 +7,7 @@ import (
 
 	"github.com/jasonlvhit/gocron"
 
+	"github.com/vladislav-chunikhin/feed-fetcher/internal/config"
 	"github.com/vladislav-chunikhin/lib-go/pkg/logger"
 )
 
@@ -22,17 +23,17 @@ type Worker struct {
 	logger  logger.Logger
 }
 
-func NewWorker(fetcher FeedFetcher, interval time.Duration, logger logger.Logger) (*Worker, error) {
+func NewWorker(fetcher FeedFetcher, config config.WorkerConfig, logger logger.Logger) (*Worker, error) {
 	if fetcher == nil {
 		return nil, fmt.Errorf("nil fetcher")
 	}
 
-	if interval == 0 {
+	if config.Interval == 0 {
 		logger.Warnf("interval equals zero, will be used default value: %ds", defaultInterval)
-		interval = defaultInterval * time.Second
+		config.Interval = defaultInterval * time.Second
 	}
 
-	seconds := interval.Seconds()
+	seconds := config.Interval.Seconds()
 
 	secondsAsUint64 := uint64(seconds)
 

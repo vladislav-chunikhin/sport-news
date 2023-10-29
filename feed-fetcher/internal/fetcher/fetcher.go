@@ -15,17 +15,17 @@ type Producer interface {
 	PublishHtafcFeed(ctx context.Context, message []byte) error
 }
 
-type HtafcFeedProvider interface {
+type FeedProvider interface {
 	GetLatestNews(ctx context.Context) (*htafc.NewListInformation, error)
 }
 
 type Fetcher struct {
-	producer          Producer
-	htafcFeedProvider HtafcFeedProvider
-	logger            logger.Logger
+	producer     Producer
+	feedProvider FeedProvider
+	logger       logger.Logger
 }
 
-func NewFetcher(producer Producer, htafcFeedProvider HtafcFeedProvider, logger logger.Logger) (*Fetcher, error) {
+func NewFetcher(producer Producer, htafcFeedProvider FeedProvider, logger logger.Logger) (*Fetcher, error) {
 	if producer == nil {
 		return nil, fmt.Errorf("nil producer")
 	}
@@ -34,11 +34,11 @@ func NewFetcher(producer Producer, htafcFeedProvider HtafcFeedProvider, logger l
 		return nil, fmt.Errorf("nil htafc feed provider")
 	}
 
-	return &Fetcher{producer: producer, htafcFeedProvider: htafcFeedProvider, logger: logger}, nil
+	return &Fetcher{producer: producer, feedProvider: htafcFeedProvider, logger: logger}, nil
 }
 
 func (f *Fetcher) Fetch(ctx context.Context) error {
-	latestNews, err := f.htafcFeedProvider.GetLatestNews(ctx)
+	latestNews, err := f.feedProvider.GetLatestNews(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to get latest news: %w", err)
 	}

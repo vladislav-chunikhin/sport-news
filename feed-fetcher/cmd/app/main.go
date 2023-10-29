@@ -4,22 +4,21 @@ import (
 	"log"
 	"time"
 
-	app "github.com/vladislav-chunikhin/lib-go"
+	baseApp "github.com/vladislav-chunikhin/lib-go"
+	"github.com/vladislav-chunikhin/lib-go/pkg/di"
 	"github.com/vladislav-chunikhin/lib-go/pkg/logger"
 
-	"github.com/vladislav-chunikhin/feed-fetcher/internal/fetcher"
-	"github.com/vladislav-chunikhin/feed-fetcher/internal/provider/htafc"
-	"github.com/vladislav-chunikhin/feed-fetcher/internal/rabbitmq"
-
+	"github.com/vladislav-chunikhin/feed-fetcher/internal/app"
 	"github.com/vladislav-chunikhin/feed-fetcher/internal/config"
-	workerPkg "github.com/vladislav-chunikhin/feed-fetcher/internal/worker"
+	producerPkg "github.com/vladislav-chunikhin/feed-fetcher/internal/producer"
 )
 
 const defaultConfigFilePath = "./config/default.yaml"
 
 func main() {
-	a := app.NewApp()
+	a := baseApp.NewApp()
 
+	// App initialization
 	cfg := &config.Config{App: a.Config}
 	err := a.LoadConfig(cfg, defaultConfigFilePath)
 	if err != nil {
@@ -37,48 +36,26 @@ func main() {
 	setupLocation(cfg, a.Logger)
 
 	// RabbitMQ initialization
-	var rabbitProducer *rabbitmq.Producer
-	rabbitProducer, err = rabbitmq.NewProducer(&cfg.RabbitMq, a.Logger)
+	var producer *producerPkg.Producer
+	producer, err = producerPkg.NewProducer(&cfg.RabbitMq, a.Logger)
 	if err != nil {
 		a.Logger.Fatalf("failed to initialize rabbitmq producer: %v", err)
 	}
-	if err = rabbitProducer.DeclareQueues(); err != nil {
+	if err = producer.DeclareQueues(); err != nil {
 		a.Logger.Fatalf("failed to declare queues: %v", err)
 	}
 
-	// Feed provider initialization
-	var feedProvider *htafc.Client
-	feedProvider, err = htafc.New(&cfg.FeedProviders.Htafc, a.Logger)
-	if err != nil {
-		a.Logger.Fatalf("failed to initialize feed provider: %v", err)
+	container := app.NewContainer(cfg, a.Logger, producer)
+	container.RegisterClosers(a.Closer)
+
+	if err = di.Build(a.Context, container); err != nil {
+		defer a.Closer.CloseAll(a.Logger)
+		a.Logger.Fatalf(err.Error())
 	}
 
-	// Fetcher initialization
-	var feedFetcher *fetcher.Fetcher
-	feedFetcher, err = fetcher.NewFetcher(rabbitProducer, feedProvider, a.Logger)
-	if err != nil {
-		a.Logger.Fatalf("failed to initialize feed fetcher: %v", err)
+	if err = container.GetWorker(a.Context).Run(a.Context); err != nil {
+		a.Logger.Fatalf("failed to run worker: %v", err)
 	}
-
-	// Worker initialization
-	var worker *workerPkg.Worker
-	if worker, err = workerPkg.NewWorker(feedFetcher, cfg.Worker.Interval, a.Logger); err != nil {
-		a.Logger.Fatalf("failed to initialize the worker: %v", err)
-	}
-
-	if err = worker.Run(a.Context); err != nil {
-		a.Logger.Fatalf("failed to run the worker: %v", err)
-	}
-
-	// Closing resources
-	a.Closer.Add(func() error {
-		worker.Stop()
-		return nil
-	})
-
-	a.Closer.Add(func() error {
-		return rabbitProducer.Close()
-	})
 
 	// Run app
 	a.Run()
