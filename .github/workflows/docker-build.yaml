@@ -49,4 +49,4 @@ jobs:
 
       - name: Docker build
         run: make build-images
-        working-directory: deployment
+        working-directory: ./deployment
