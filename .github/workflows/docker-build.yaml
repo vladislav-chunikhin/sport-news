@@ -20,22 +20,23 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Docker meta
-        id: docker_meta
-        uses: docker/metadata-action@v5
-        with:
-          images: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/sport-news/feed-fetcher
-            ${{ secrets.DOCKERHUB_USERNAME }}/sport-news/feed-service
-            ${{ secrets.DOCKERHUB_USERNAME }}/sport-news/feed-transformer
-          flavor: |
-            latest=false
-          tags: |
-            type=sha,prefix=${{ github.ref }}-
-            type=raw,value=${{ github.ref }}-${{ github.sha }}
+#      - name: Docker meta
+#        id: docker_meta
+#        uses: docker/metadata-action@v5
+#        with:
+#          images: |
+#            ${{ secrets.DOCKERHUB_USERNAME }}/sport-news/feed-fetcher
+#            ${{ secrets.DOCKERHUB_USERNAME }}/sport-news/feed-service
+#            ${{ secrets.DOCKERHUB_USERNAME }}/sport-news/feed-transformer
+#          flavor: |
+#            latest=false
+#          tags: |
+#            type=sha,prefix=${{ github.ref }}-
+#            type=raw,value=${{ github.ref }}-${{ github.sha }}
 
       - name: Docker build
         run: |
           pwd
-          ls
-          make build-images
+          ls -l
+          echo "hello"
+#          make build-images
