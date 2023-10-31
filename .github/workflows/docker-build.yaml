@@ -37,11 +37,6 @@ jobs:
       #            type=sha,prefix=${{ github.ref }}-
       #            type=raw,value=${{ github.ref }}-${{ github.sha }}
 
-      - name: Docker build
-        run: |
-          pwd
-          ls -l
-          cd deployment
-          ls -l
-          echo "hello"
-#          make build-images
+      - name: Build images
+        run: make build-images
+        working-directory: deployment
