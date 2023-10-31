@@ -12,9 +12,6 @@ jobs:
     name: Build Image
     runs-on: ubuntu-latest
 
-    permissions:
-      pull-requests: write # needed to create and update comments in PRs
-
     steps:
 
       - name: Login to Docker Hub
@@ -37,16 +34,6 @@ jobs:
             type=sha,prefix=${{ github.ref }}-
             type=raw,value=${{ github.ref }}-${{ github.sha }}
 
-          #      - name: Docker build
-          #        uses: docker/build-push-action@v5
-          #        with:
-          #          push: false
-          #          tags: ${{ steps.docker_meta.outputs.tags }}
-          #          labels: ${{ steps.docker_meta.outputs.labels }}
-          #          cache-from: type=gha
-          #          cache-to: type=gha,mode=max
-          #          platforms: linux/amd64,linux/arm64,linux/arm/v7
-
       - name: Docker build
         run: make build-images
-        working-directory: ./deployment
+        working-directory: deployment
