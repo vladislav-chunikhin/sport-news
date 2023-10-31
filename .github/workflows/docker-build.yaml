@@ -37,4 +37,5 @@ jobs:
       - name: Docker build
         run: |
           pwd
+          ls
           make build-images
