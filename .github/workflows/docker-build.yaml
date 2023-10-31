@@ -40,11 +40,8 @@ jobs:
           flavor: |
             latest=false
           tags: |
-            type=raw,value=latest,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
-            type=raw,value=stable-{{date 'YYYYMMDDHHmmss'}},enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
-            type=ref,event=pr
-            type=ref,event=branch
-            type=raw,value=gha-${{ github.run_id }}
+            type=sha,prefix=${{ github.ref }}-
+            type=raw,value=${{ github.ref }}-${{ github.sha }}
 
       - name: Docker build
         uses: docker/build-push-action@v5
