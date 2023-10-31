@@ -38,7 +38,7 @@ jobs:
         run: |
           pwd
           ls -l
-          cd ..
+          cd deployment
           ls -l
           echo "hello"
 #          make build-images
