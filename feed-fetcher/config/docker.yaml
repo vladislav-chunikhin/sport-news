@@ -5,8 +5,6 @@ httpServerWriteTimeout: 30
 httpServerPort: 8080
 httpDebugPort: 8082
 
-timeZone: "UTC"
-
 worker:
   interval: 30s
 

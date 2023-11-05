@@ -10,6 +10,8 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    networks:
+      feed-fetcher:
     healthcheck:
       test: [ "CMD-SHELL", "rabbitmqctl ping" ]
       interval: 10s
@@ -24,6 +26,11 @@ services:
       - ${APP_PORT}:${APP_PORT}
     environment:
       CONFIG_FILE: ./config/docker.yaml
+    networks:
+      feed-fetcher:
     depends_on:
       rabbitmq:
         condition: service_healthy
+
+networks:
+  feed-fetcher:
