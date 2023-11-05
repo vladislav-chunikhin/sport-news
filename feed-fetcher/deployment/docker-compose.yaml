@@ -26,6 +26,8 @@ services:
       - ${APP_PORT}:${APP_PORT}
     environment:
       CONFIG_FILE: ./config/docker.yaml
+    networks:
+      feed-fetcher:
     depends_on:
       rabbitmq:
         condition: service_healthy
