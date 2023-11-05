@@ -11,10 +11,12 @@ import (
 	"github.com/vladislav-chunikhin/feed-fetcher/internal/provider/htafc"
 )
 
+//go:generate mockery --name=Producer --with-expecter --case=underscore
 type Producer interface {
 	PublishHtafcFeed(ctx context.Context, message []byte) error
 }
 
+//go:generate mockery --name=FeedProvider --with-expecter --case=underscore
 type FeedProvider interface {
 	GetLatestNews(ctx context.Context) (*htafc.NewListInformation, error)
 }

@@ -2,11 +2,9 @@ package main
 
 import (
 	"log"
-	"time"
 
 	baseApp "github.com/vladislav-chunikhin/lib-go"
 	"github.com/vladislav-chunikhin/lib-go/pkg/di"
-	"github.com/vladislav-chunikhin/lib-go/pkg/logger"
 
 	"github.com/vladislav-chunikhin/feed-fetcher/internal/app"
 	"github.com/vladislav-chunikhin/feed-fetcher/internal/config"
@@ -33,8 +31,6 @@ func main() {
 		log.Fatalf("app init error: %v", err)
 	}
 
-	setupLocation(cfg, a.Logger)
-
 	// RabbitMQ initialization
 	var producer *producerPkg.Producer
 	producer, err = producerPkg.NewProducer(&cfg.RabbitMq, a.Logger)
@@ -59,14 +55,4 @@ func main() {
 
 	// Run app
 	a.Run()
-}
-
-func setupLocation(cfg *config.Config, logger logger.Logger) {
-	if len(cfg.TimeZone) != 0 {
-		loc, err := time.LoadLocation(cfg.TimeZone)
-		if err == nil {
-			logger.Debugf("init location from config: %s", cfg.TimeZone)
-			time.Local = loc
-		}
-	}
 }
