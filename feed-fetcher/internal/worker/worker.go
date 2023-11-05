@@ -7,12 +7,14 @@ import (
 
 	"github.com/jasonlvhit/gocron"
 
-	"github.com/vladislav-chunikhin/feed-fetcher/internal/config"
 	"github.com/vladislav-chunikhin/lib-go/pkg/logger"
+
+	"github.com/vladislav-chunikhin/feed-fetcher/internal/config"
 )
 
 const defaultInterval = 30
 
+//go:generate mockery --name=FeedFetcher --with-expecter --case=underscore
 type FeedFetcher interface {
 	Fetch(ctx context.Context) error
 }
