@@ -14,7 +14,6 @@ import (
 
 const defaultInterval = 30
 
-//go:generate mockery --name=FeedFetcher --with-expecter --case=underscore
 type FeedFetcher interface {
 	Fetch(ctx context.Context) error
 }

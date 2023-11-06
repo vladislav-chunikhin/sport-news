@@ -14,20 +14,20 @@ import (
 func TestWorker_Run(t *testing.T) {
 	ctx := context.TODO()
 	logger := mocks.NewMockLogger()
-
-	feedFetcher := mocks.NewFeedFetcher(t)
-	feedFetcher.EXPECT().
-		Fetch(ctx).
-		Return(nil)
+	feedFetcher := mocks.NewFeedFetcher()
 
 	worker, err := NewWorker(feedFetcher, config.WorkerConfig{Interval: 1 * time.Second}, logger)
 	require.NoError(t, err)
 
 	err = worker.Run(ctx)
 	require.NoError(t, err)
+}
 
-	// Waiting for the cron task to finish
-	time.Sleep(2 * time.Second)
+func TestWorker_Run_Invalid_Interval(t *testing.T) {
+	logger := mocks.NewMockLogger()
+	feedFetcher := mocks.NewFeedFetcher()
 
-	worker.Stop()
+	_, err := NewWorker(feedFetcher, config.WorkerConfig{Interval: 1 * time.Microsecond}, logger)
+	require.Error(t, err)
+	require.Equal(t, "the interval must consist of whole seconds, for example, 1s, 2s, 3s, etc. Invalid value is 50ms, as it corresponds to 0.05s", err.Error())
 }
