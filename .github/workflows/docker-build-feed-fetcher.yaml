@@ -55,6 +55,8 @@ jobs:
           push: true
           tags: ghcr.io/vladislav-chunikhin/sport-news/feed-fetcher:${{ github.run_id }}
           build-args: |
+            GOMOD_PATH=./feed-fetcher/go.mod
+            PROJECT_PATH=./feed-fetcher/
             OUTPUT_BINARY=build/output/main
             APP_VERSION=test
             APP_NAME=feed-fetcher

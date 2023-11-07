@@ -1,15 +1,17 @@
 FROM golang:1.21 AS builder
 
+ARG GOMOD_PATH=go.mod
+ARG PROJECT_PATH=.
 ARG OUTPUT_BINARY
 ARG BUILD_DIR
 ARG APP_PORT=8080
 
 WORKDIR /app
 
-COPY ./feed-fetcher/go.mod ./
+COPY ${GOMOD_PATH} ./
 RUN go mod download && go mod verify
 
-COPY ./feed-fetcher/ .
+COPY ${PROJECT_PATH} .
 
 RUN mkdir -p $(dirname ${OUTPUT_BINARY}) && \
     CGO_ENABLED=0 go build -o ${OUTPUT_BINARY} ${BUILD_DIR}
