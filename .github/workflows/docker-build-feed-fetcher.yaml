@@ -92,3 +92,4 @@ jobs:
           files: ./feed-fetcher/cover.out
           verbose: true
           fail_ci_if_error: true
+          flags: unittests
