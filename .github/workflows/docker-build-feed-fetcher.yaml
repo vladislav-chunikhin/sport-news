@@ -54,6 +54,12 @@ jobs:
           file: ./feed-fetcher/build/Dockerfile
           push: true
           tags: ghcr.io/vladislav-chunikhin/sport-news/feed-fetcher:${{ github.run_id }}
+          build-args: |
+            OUTPUT_BINARY="build/output/main"
+            APP_VERSION=test
+            APP_NAME=feed-fetcher
+            BUILD_DIR="./cmd/app"
+            APP_PORT=8080
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: linux/amd64
