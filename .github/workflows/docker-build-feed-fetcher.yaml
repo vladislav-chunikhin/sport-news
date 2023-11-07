@@ -18,6 +18,11 @@ on:
     # re-run monthly to keep image fresh with upstream base images
     - cron: '0 12 15 * *'
 
+env:
+  GITHUB_CREDS: ${{ secrets.GITHUB_TOKEN }}
+  REPO_API: api.github.com/repos/vladislav-chunikhin/sport-news/statuses/${{ github.event.pull_request.head.sha }}
+  COVER_MIN: 70
+
 jobs:
   # Building a test image #######################################################################
   build-test-image:
