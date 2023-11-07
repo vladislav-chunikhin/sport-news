@@ -110,6 +110,9 @@ jobs:
             STATE=failure
           fi
           
+          echo "total: $TOTAL"
+          echo "state: $STATE"
+          
           # Update the GitHub repository status based on the coverage results
-          curl -X POST "https://${GITHUB_CREDS}@${REPO_API}" -d "{\"state\":\"${STATE}\",\"description\":\"Total coverage ${TOTAL}%, minimum ${COVER_MIN}%\",\"context\": \"quality gate\"}"
+          curl -X POST "https://${GITHUB_CREDS}@${REPO_API}" -d "{\"state\":\"${STATE}\",\"description\":\"total cover ${TOTAL}%, min ${COVER_MIN}%\",\"context\": \"quality gate\"}"
 
