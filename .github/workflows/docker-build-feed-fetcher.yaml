@@ -51,7 +51,7 @@ jobs:
       - name: Build and Push to GHCR
         uses: docker/build-push-action@v5
         with:
-          file: ./feed-fetcher/build/Dockerfile
+          file: ./feed-fetcher/Dockerfile
           push: true
           tags: ghcr.io/vladislav-chunikhin/sport-news/feed-fetcher:${{ github.run_id }}
           build-args: |
