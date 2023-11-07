@@ -6,10 +6,10 @@ ARG APP_PORT=8080
 
 WORKDIR /app
 
-COPY go.mod ./
+COPY ../go.mod ./
 RUN go mod download && go mod verify
 
-COPY . .
+COPY ../. .
 
 RUN mkdir -p $(dirname ${OUTPUT_BINARY}) && \
     CGO_ENABLED=0 go build -o ${OUTPUT_BINARY} ${BUILD_DIR}
