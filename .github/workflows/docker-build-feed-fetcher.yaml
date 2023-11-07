@@ -18,11 +18,6 @@ on:
     # re-run monthly to keep image fresh with upstream base images
     - cron: '0 12 15 * *'
 
-env:
-  GITHUB_CREDS: ${{ secrets.GITHUB_TOKEN }}
-  REPO_API: api.github.com/repos/vladislav-chunikhin/sport-news/statuses/${{ github.event.pull_request.head.sha }}
-  COVER_MIN: 70
-
 jobs:
   # Building a test image #######################################################################
   build-test-image:
@@ -92,32 +87,8 @@ jobs:
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Upload code coverage
-        uses: actions/upload-artifact@v2
         with:
-          name: code-coverage
-          path: ./feed-fetcher/cover.out
-
-      - name: Generate coverage status
-        run: |
-          cd ./feed-fetcher
-          TOTAL=$(go tool cover -func=cover.out | grep total | grep -Eo '[0-9]+\.[0-9]+')
-          
-          # Compare the calculated coverage with the minimum coverage threshold
-          if (( $(echo "${TOTAL} > ${COVER_MIN}" | bc -l) )); then
-            STATE=success
-          else
-            STATE=failure
-          fi
-          
-          echo "total: $TOTAL"
-          echo "state: $STATE"
-          echo "github creds: $GITHUB_CREDS"
-          echo "repo api: REPO_API"
-          
-          # Update the GitHub repository status based on the coverage results
-          curl -X POST "https://${GITHUB_CREDS}@${REPO_API}" -d "{\"state\":\"${STATE}\",\"description\":\"total cover ${TOTAL}%, min ${COVER_MIN}%\",\"context\": \"quality gate\"}"
-
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./feed-fetcher/cover.out
+          verbose: true
+          fail_ci_if_error: true
