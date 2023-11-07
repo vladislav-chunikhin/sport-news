@@ -9,7 +9,7 @@ WORKDIR /app
 COPY ./feed-fetcher/go.mod ./
 RUN go mod download && go mod verify
 
-COPY . .
+COPY ./feed-fetcher/ .
 
 RUN mkdir -p $(dirname ${OUTPUT_BINARY}) && \
     CGO_ENABLED=0 go build -o ${OUTPUT_BINARY} ${BUILD_DIR}
