@@ -1,0 +1,67 @@
+---
+name: 'Feed Transformer: Build, Test and Push'
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'feed-transformer/**'
+      - '.github/workflows/docker-build-feed-transformer.yaml'
+  pull_request:
+    branches:
+      - 'main'
+    paths:
+      - 'feed-transformer/**'
+      - '.github/workflows/docker-build-feed-transformer.yaml'
+  schedule:
+    # re-run monthly to keep image fresh with upstream base images
+    - cron: '0 12 15 * *'
+
+jobs:
+  # Building a test image #######################################################################
+  build-test-image:
+    name: Build Image for Testing
+    runs-on: ubuntu-latest
+
+    permissions:
+      packages: write # needed to push docker image to ghcr.io
+
+    steps:
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to ghcr.io registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout git repo
+        uses: actions/checkout@v4.1.1
+
+      - name: Build and Push to GHCR
+        uses: docker/build-push-action@v5
+        with:
+          file: ./feed-transformer/build/Dockerfile
+          push: true
+          tags: ghcr.io/vladislav-chunikhin/sport-news/feed-transformer:${{ github.run_id }}
+          build-args: |
+            GOMOD_PATH=./feed-transformer/go.mod
+            PROJECT_PATH=./feed-transformer/
+            OUTPUT_BINARY=build/output/main
+            APP_VERSION=test
+            APP_NAME=feed-transformer
+            BUILD_DIR=./cmd/app
+            APP_PORT=8080
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64
