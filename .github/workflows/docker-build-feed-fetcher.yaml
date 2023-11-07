@@ -92,7 +92,8 @@ jobs:
 
       - name: Generate coverage status
         run: |
-          chmod +x ./feed-fetcher/test-coverage-github.sh
-          ./feed-fetcher/test-coverage-github.sh
+          chmod +x test-coverage-github.sh
+          test-coverage-github.sh
         shell: bash
+        working-directory: feed-fetcher
 
