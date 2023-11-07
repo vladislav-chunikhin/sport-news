@@ -92,8 +92,7 @@ jobs:
 
       - name: Generate coverage status
         run: |
-          # Calculate the total test coverage percentage from the 'cover.out' file
-          TOTAL=$(go tool cover -func=cover.out | grep total | grep -Eo '[0-9]+\.[0-9]+')
+          TOTAL=$(go tool cover -func=./feed-fetcher/cover.out | grep total | grep -Eo '[0-9]+\.[0-9]+')
           
           # Compare the calculated coverage with the minimum coverage threshold
           if (( $(echo "${TOTAL} > ${COVER_MIN}" | bc -l) )); then
