@@ -61,7 +61,7 @@ jobs:
             APP_VERSION=test
             APP_NAME=feed-transformer
             BUILD_DIR=./cmd/app
-            APP_PORT=8080
+            APP_PORT=8088
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: linux/amd64
