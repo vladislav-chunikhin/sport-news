@@ -98,11 +98,10 @@ jobs:
 
       - name: Generate coverage status
         run: |
-          ls -l
           cd ./feed-fetcher
           ls -l
           
-          TOTAL=$(go tool cover -func=./feed-fetcher/cover.out | grep total | grep -Eo '[0-9]+\.[0-9]+')
+          TOTAL=$(go tool cover -func=cover.out | grep total | grep -Eo '[0-9]+\.[0-9]+')
           
           # Compare the calculated coverage with the minimum coverage threshold
           if (( $(echo "${TOTAL} > ${COVER_MIN}" | bc -l) )); then
