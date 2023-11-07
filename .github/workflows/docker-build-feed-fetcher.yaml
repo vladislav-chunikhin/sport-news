@@ -66,3 +66,29 @@ jobs:
           cache-to: type=gha,mode=max
           platforms: linux/amd64
 
+  # Unit tests #######################################################################
+  unit-test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout git repo
+        uses: actions/checkout@v4.1.1
+
+      - name: Set up Go
+        uses: actions/setup-go@v4.1.0
+        with:
+          go-version: '1.21'
+
+      - name: Run unit tests
+        run: make test-unit
+        working-directory: feed-fetcher
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./feed-fetcher/cover.out
+          verbose: true
+          fail_ci_if_error: true
