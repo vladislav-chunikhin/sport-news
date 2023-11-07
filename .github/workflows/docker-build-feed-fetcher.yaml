@@ -66,3 +66,33 @@ jobs:
           cache-to: type=gha,mode=max
           platforms: linux/amd64
 
+  # Unit tests #######################################################################
+  unit-test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout git repo
+        uses: actions/checkout@v4.1.1
+
+      - name: Run unit tests
+        run: make test-unit
+        working-directory: feed-fetcher
+
+      - name: Upload code coverage
+        uses: actions/upload-artifact@v2
+        with:
+          name: code-coverage
+          path: ./feed-fetcher/cover.out
+
+      - name: Generate coverage status
+        run: |
+          cat coverage.out | grep -v "mock" > coverage.cleaned.out
+          TOTAL=`go tool cover -func=coverage.cleaned.out | grep total | grep -Eo '[0-9]+\.[0-9]+'`
+          if (( $(echo "${TOTAL} > ${COVER_MIN}" |bc -l) )); then 
+            STATE=success; 
+          else 
+            STATE=failure;
+          fi
+          curl -X POST "https://${GITHUB_CREDS}@${REPO_API}" -d "{\"state\":\"${STATE}\",\"description\":\"total cover ${TOTAL}%, min ${COVER_MIN}%\",\"context\": \"quality gate\"}"
+
