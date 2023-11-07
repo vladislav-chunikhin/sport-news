@@ -83,7 +83,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: code-coverage
-          path: ./feed-fetcer/cover.out
+          path: ./feed-fetcher/cover.out
 
       - name: Generate coverage status
         run: |
