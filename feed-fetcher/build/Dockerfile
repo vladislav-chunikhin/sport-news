@@ -6,7 +6,7 @@ ARG APP_PORT=8080
 
 WORKDIR /app
 
-COPY go.mod ./
+COPY ./feed-fetcher/go.mod ./
 RUN go mod download && go mod verify
 
 COPY . .
