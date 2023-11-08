@@ -97,13 +97,31 @@ func TestFetcher_Fetch(t *testing.T) {
 			}(),
 			expectedErrMsg: "failed to publish message: some error",
 		},
+		{
+			name:           "nil producer",
+			producer:       nil,
+			provider:       mocks.NewFeedProvider(t),
+			expectedErrMsg: "nil producer",
+		},
+		{
+			name:           "nil provider",
+			producer:       mocks.NewProducer(t),
+			provider:       nil,
+			expectedErrMsg: "nil htafc feed provider",
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			fetcher, err := NewFetcher(tc.producer, tc.provider, mockLogger)
-			require.NoError(t, err)
+			if tc.expectedErrMsg != "" && err != nil {
+				require.Error(t, err)
+				require.Nil(t, fetcher)
+				require.Equal(t, tc.expectedErrMsg, err.Error())
+				return
+			}
 
+			require.NoError(t, err)
 			err = fetcher.Fetch(ctx)
 			if tc.expectedErrMsg == "" {
 				require.NoError(t, err)
