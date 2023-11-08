@@ -1,6 +1,7 @@
 package mapper
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -56,5 +57,71 @@ func TestToArticleItems(t *testing.T) {
 		require.Equal(t, expectedArticle.ID, result.Articles[i].ID)
 		require.Equal(t, expectedArticle.Published, result.Articles[i].Published)
 		require.Equal(t, expectedArticle.Updated, result.Articles[i].Updated)
+	}
+}
+
+func TestToArticleItems_Nil_Input(t *testing.T) {
+	require.Nil(t, ToArticleItems(nil, mocks.NewMockLogger()))
+}
+
+func TestToArticleItem(t *testing.T) {
+	testCases := []struct {
+		name           string
+		input          *htafc.NewsletterNewsItem
+		expectedResult *ArticleItem
+		expectedError  error
+	}{
+		{
+			name:           "nil input",
+			input:          nil,
+			expectedResult: nil,
+			expectedError:  nil,
+		},
+		{
+			name: "article item is not published",
+			input: &htafc.NewsletterNewsItem{
+				NewsArticleID:  1,
+				PublishDate:    "2023-08-01 12:00:00",
+				LastUpdateDate: "2023-08-02 10:00:00",
+				IsPublished:    "False",
+			},
+			expectedResult: nil,
+			expectedError:  nil,
+		},
+		{
+			name: "invalid last update date",
+			input: &htafc.NewsletterNewsItem{
+				NewsArticleID:  1,
+				PublishDate:    "2023-08-01 12:00:00",
+				LastUpdateDate: "2023-08",
+				IsPublished:    "True",
+			},
+			expectedResult: nil,
+			expectedError:  fmt.Errorf("parsing time \"2023-08\" as \"2006-01-02 15:04:05\": cannot parse \"\" as \"-\""),
+		},
+		{
+			name: "invalid publish date",
+			input: &htafc.NewsletterNewsItem{
+				NewsArticleID:  1,
+				PublishDate:    "2023-08",
+				LastUpdateDate: "2023-08-02 10:00:00",
+				IsPublished:    "True",
+			},
+			expectedResult: nil,
+			expectedError:  fmt.Errorf("parsing time \"2023-08\" as \"2006-01-02 15:04:05\": cannot parse \"\" as \"-\""),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result, err := toArticleItem(tc.input)
+			require.Equal(t, tc.expectedResult, result)
+			if err != nil {
+				require.NotNil(t, tc.expectedError)
+				require.Equal(t, tc.expectedError.Error(), err.Error())
+				return
+			}
+			require.NoError(t, err)
+		})
 	}
 }
