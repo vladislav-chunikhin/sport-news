@@ -186,7 +186,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/sport-news/feed-fetcher
+            ${{ secrets.DOCKERHUB_USERNAME }}/feed-fetcher
             ghcr.io/vladislav-chunikhin/sport-news/feed-fetcher
           flavor: |
             latest=false
