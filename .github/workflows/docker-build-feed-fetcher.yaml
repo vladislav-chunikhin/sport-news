@@ -92,3 +92,151 @@ jobs:
           files: ./feed-fetcher/cover.out
           verbose: true
           fail_ci_if_error: true
+          flags: feed-fetcher
+
+  # Scan Image with Trivy #######################################################################
+  scan-image:
+    name: Scan Image with Trivy
+    needs: [ build-test-image ]
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read # for actions/checkout to fetch code
+      packages: read # needed to pull docker image to ghcr.io
+      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
+
+    steps:
+
+      - name: Checkout git repo
+        uses: actions/checkout@v4.1.1
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to ghcr.io registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull image to scan
+        run: docker pull ghcr.io/vladislav-chunikhin/sport-news/feed-fetcher:"$GITHUB_RUN_ID"
+
+      - name: Run Trivy for all CVEs (non-blocking)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ghcr.io/vladislav-chunikhin/sport-news/feed-fetcher:${{ github.run_id }}
+          format: table
+          exit-code: 0
+
+  #      - name: Run Trivy for HIGH,CRITICAL CVEs and report (blocking)
+  #        uses: aquasecurity/trivy-action@master
+  #        with:
+  #          image-ref: ghcr.io/vladislav-chunikhin/sport-news/feed-fetcher:${{ github.run_id }}
+  #          exit-code: 1
+  #          ignore-unfixed: true
+  #          vuln-type: 'os,library'
+  #          severity: 'HIGH,CRITICAL'
+  #          format: 'sarif'
+  #          output: 'trivy-results.sarif'
+  #
+  #      - name: Upload Trivy scan results to GitHub Security tab
+  #        uses: github/codeql-action/upload-sarif@v2
+  #        if: always()
+  #        with:
+  #          sarif_file: 'trivy-results.sarif'
+
+  # Build Final Image #######################################################################
+  build-push-final-image:
+    name: Build Final Image
+    needs: [ unit-test, scan-image ]
+    runs-on: ubuntu-latest
+
+    permissions:
+      packages: write # needed to push docker image to ghcr.io
+      pull-requests: write # needed to create and update comments in PRs
+
+    steps:
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to ghcr.io registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker Metadata for Final Image Build
+        id: docker_meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/feed-fetcher
+            ghcr.io/vladislav-chunikhin/sport-news/feed-fetcher
+          flavor: |
+            latest=false
+          tags: |
+            type=ref,event=pr
+            type=ref,event=branch
+            type=raw,value=gha-${{ github.run_id }}
+
+      - name: Docker Build and Push to GHCR and Docker Hub
+        uses: docker/build-push-action@v5
+        with:
+          file: ./feed-fetcher/build/Dockerfile
+          push: true
+          tags: ${{ steps.docker_meta.outputs.tags }}
+          labels: ${{ steps.docker_meta.outputs.labels }}
+          build-args: |
+            GOMOD_PATH=./feed-fetcher/go.mod
+            PROJECT_PATH=./feed-fetcher/
+            OUTPUT_BINARY=build/output/main
+            APP_VERSION=prod
+            APP_NAME=feed-fetcher
+            BUILD_DIR=./cmd/app
+            APP_PORT=8080
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+
+      - name: Find comment for image tags
+        uses: peter-evans/find-comment@v2.4.0
+        if: github.event_name == 'pull_request'
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: Docker image tag(s) pushed
+
+      - name: Create or update comment for image tags
+        uses: peter-evans/create-or-update-comment@v1
+        if: github.event_name == 'pull_request'
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            Docker image tag(s) pushed:
+            ```text
+            ${{ steps.docker_meta.outputs.tags }}
+            ```
+
+            Labels added to images:
+            ```text
+            ${{ steps.docker_meta.outputs.labels }}
+            ```
+          edit-mode: replace

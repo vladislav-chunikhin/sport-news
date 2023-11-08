@@ -21,13 +21,30 @@ func TestWorker_Run(t *testing.T) {
 
 	err = worker.Run(ctx)
 	require.NoError(t, err)
+	worker.Stop()
 }
 
-func TestWorker_Run_Invalid_Interval(t *testing.T) {
+func TestWorker_NewWorker_Invalid_Interval(t *testing.T) {
 	logger := mocks.NewMockLogger()
 	feedFetcher := mocks.NewFeedFetcher()
 
 	_, err := NewWorker(feedFetcher, config.WorkerConfig{Interval: 1 * time.Microsecond}, logger)
 	require.Error(t, err)
 	require.Equal(t, "the interval must consist of whole seconds, for example, 1s, 2s, 3s, etc. Invalid value is 50ms, as it corresponds to 0.05s", err.Error())
+}
+
+func TestWorker_NewWorker_Nil_Fetcher(t *testing.T) {
+	logger := mocks.NewMockLogger()
+	_, err := NewWorker(nil, config.WorkerConfig{Interval: 1 * time.Microsecond}, logger)
+	require.Error(t, err)
+	require.Equal(t, "nil fetcher", err.Error())
+}
+
+func TestWorker_NewWorker_Default_Value(t *testing.T) {
+	logger := mocks.NewMockLogger()
+	feedFetcher := mocks.NewFeedFetcher()
+
+	worker, err := NewWorker(feedFetcher, config.WorkerConfig{Interval: 0 * time.Second}, logger)
+	require.NoError(t, err)
+	worker.Stop()
 }

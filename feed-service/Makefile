@@ -48,3 +48,7 @@ test-unit: ## Run unit tests
 	go test -v -race -short  ./... -coverprofile cover.out
 	@go tool cover -func cover.out | grep total | grep -Eo '[0-9]+\.[0-9]+' | xargs -I'{}' echo total '{}'%
 
+.PHONY: coverage
+coverage: ## Show coverage
+	@go tool cover -html=cover.out
+

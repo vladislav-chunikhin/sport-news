@@ -1,0 +1,27 @@
+coverage:
+  status:
+    project:
+      default: off
+      feed-fetcher:
+        target: 80%
+        flags:
+          - feed-fetcher
+      feed-service:
+        target: 10%
+        flags:
+          - feed-service
+      feed-transformer:
+        target: 10%
+        flags:
+          - feed-transformer
+
+flags:
+  feed-fetcher:
+    paths:
+      - feed-fetcher/
+  feed-service:
+    paths:
+      - feed-service/
+  feed-transformer:
+    paths:
+      - feed-transformer/
