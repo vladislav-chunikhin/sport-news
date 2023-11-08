@@ -1,0 +1,13 @@
+coverage:
+  status:
+    project:
+      default: off
+      feed-fetcher:
+        target: 80%
+        flags:
+          - feed-fetcher
+
+flags:
+  feed-fetcher:
+    paths:
+      - feed-fetcher/
