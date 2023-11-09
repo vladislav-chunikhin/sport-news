@@ -1,7 +1,17 @@
 #!/bin/bash
 
+# Declare environment variables
+export RABBITMQ_USERNAME=${RABBITMQ_USERNAME:-vlad}
+export RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD:-sport}
+
 # Create Namespace
 kubectl create namespace feed-fetcher
+
+# Create or update the ConfigMap with the environment variables
+kubectl create configmap rabbitmq-config --namespace=feed-fetcher \
+  --from-literal=RABBITMQ_DEFAULT_USER="$RABBITMQ_USERNAME" \
+  --from-literal=RABBITMQ_DEFAULT_PASS="$RABBITMQ_PASSWORD" \
+  --dry-run=client -o yaml | kubectl apply -f -
 
 # Deploy RabbitMQ
 kubectl apply -f rabbitmq-deployment.yaml

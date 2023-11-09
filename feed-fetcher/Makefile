@@ -2,21 +2,6 @@ ifneq ("$(wildcard .env)","")
     include .env
 endif
 
-APP_NAME ?= feed-fetcher
-PROJECT_NAME ?= sport-news
-APP_VERSION ?= local
-APP_PORT ?= 8080
-APP_MAINTENANCE_PORT ?= 8082
-
-BUILD_DIR ?= "./cmd/app"
-OUTPUT_BINARY ?= "build/output/main"
-DOCKERFILE_NAME ?= build/Dockerfile
-
-RABBITMQ_USERNAME ?= vlad
-RABBITMQ_PASSWORD ?= sport
-RABBITMQ_PORT ?= 5672
-RABBITMQ_UI_PORT ?= 15672
-
 .PHONY: help
 all: help
 help: Makefile
@@ -37,11 +22,11 @@ services=
 .PHONY: deploy
 deploy: ## Deploy the service with its dependencies. You can deploy custom containers using the 'services' variable. Example: make deploy services='feed-fetcher rabbitmq'
 	@echo 'Deploying containers: $(services)'
-	docker-compose -f ./deployment/docker-compose.yaml -p ${APP_NAME} up -d $(services)
+	docker-compose -f ./deployment/docker-compose.yaml --env-file .env -p ${APP_NAME} up -d $(services)
 
 .PHONY: delete
 delete: ## Delete the deployed service
-	@docker-compose -f ./deployment/docker-compose.yaml -p ${APP_NAME} rm -sf
+	@docker-compose -f ./deployment/docker-compose.yaml --env-file .env -p ${APP_NAME} rm -sf
 
 .PHONY: test-unit
 test-unit: ## Run unit tests
@@ -51,3 +36,10 @@ test-unit: ## Run unit tests
 .PHONY: coverage
 coverage: ## Show coverage
 	@go tool cover -html=cover.out
+
+# Delete image
+.PHONY: delete-image
+delete-image: ## Delete image
+	@echo 'Deleting the image'
+	docker rmi ${PROJECT_NAME}/${APP_NAME}:${APP_VERSION}
+

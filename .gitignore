@@ -19,5 +19,3 @@ coverage.out
 /feed-fetcher/config/local.yaml
 /feed-service/config/local.yaml
 /feed-transformer/config/local.yaml
-
-.env
