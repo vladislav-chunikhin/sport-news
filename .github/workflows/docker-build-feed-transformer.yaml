@@ -97,7 +97,7 @@ jobs:
   # Build Final Image #######################################################################
   build-push-final-image:
     name: Build Final Image
-    needs: [ unit-test, scan-image ]
+    needs: [ unit-test ]
     runs-on: ubuntu-latest
 
     permissions:
