@@ -7,11 +7,11 @@ coverage:
         flags:
           - feed-fetcher
       feed-service:
-        target: 10%
+        target: 60%
         flags:
           - feed-service
       feed-transformer:
-        target: 10%
+        target: 60%
         flags:
           - feed-transformer
 
