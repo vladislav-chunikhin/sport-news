@@ -12,8 +12,8 @@ kubectl delete -f rabbitmq-service.yaml
 # Delete RabbitMQ Deployment
 kubectl delete -f rabbitmq-deployment.yaml
 
-# Delete ConfigMap
-kubectl delete -n feed-fetcher configmap rabbitmq-config
+# Delete RabbitMQ ConfigMap
+kubectl delete -f rabbitmq-configmap.yaml
 
-# Delete the 'feed-fetcher' namespace
-kubectl delete namespace feed-fetcher
+# Delete Feed Fetcher Namespace
+kubectl delete -f feed-fetcher-namespace.yaml
