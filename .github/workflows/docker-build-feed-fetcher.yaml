@@ -143,7 +143,7 @@ jobs:
   # Build Final Image #######################################################################
   build-push-final-image:
     name: Build Final Image
-    needs: [ unit-test ]
+    needs: [ unit-test, test-k3d ]
     runs-on: ubuntu-latest
 
     permissions:
