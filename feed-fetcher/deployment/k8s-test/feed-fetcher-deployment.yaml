@@ -16,7 +16,7 @@ spec:
         app: feed-fetcher
     spec:
       containers:
-        - image: sport-news/feed-fetcher:local
+        - image: "${TEST_IMAGE}"
           name: feed-fetcher
           env:
             - name: CONFIG_FILE

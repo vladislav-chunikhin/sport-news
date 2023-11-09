@@ -3,6 +3,7 @@
 # Declare environment variables
 export RABBITMQ_USERNAME=${RABBITMQ_USERNAME:-vlad}
 export RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD:-sport}
+export TEST_IMAGE=${TEST_IMAGE:-sport-news/feed-fetcher:local}
 
 # Create Namespace
 kubectl apply -f feed-fetcher-namespace.yaml
@@ -19,7 +20,7 @@ echo "Waiting for RabbitMQ to become ready..."
 if kubectl wait --namespace feed-fetcher --for=condition=ready pod -l app=rabbitmq --timeout=180s; then
     echo "RabbitMQ is ready."
     # Deploy Feed Fetcher
-    kubectl apply -f feed-fetcher-deployment.yaml
+    envsubst < feed-fetcher-deployment.yaml | kubectl apply -f -
     kubectl apply -f feed-fetcher-service.yaml
 else
     echo "RabbitMQ is not ready within the timeout period. Exiting..."
