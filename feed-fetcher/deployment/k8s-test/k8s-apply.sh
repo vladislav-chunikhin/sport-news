@@ -19,17 +19,13 @@ kubectl apply -f rabbitmq-service.yaml
 
 # Wait for RabbitMQ to be ready
 echo "Waiting for RabbitMQ to become ready..."
-while true; do
-    # Check if RabbitMQ pods are ready
-    if kubectl wait --namespace feed-fetcher --for=condition=ready pod -l app=rabbitmq --timeout=300s; then
-        echo "RabbitMQ is ready."
-        break
-    else
-        echo "RabbitMQ is not ready yet. Retrying in 10 seconds..."
-        sleep 10
-    fi
-done
-
-# Deploy Feed Fetcher
-kubectl apply -f feed-fetcher-deployment.yaml
-kubectl apply -f feed-fetcher-service.yaml
+if kubectl wait --namespace feed-fetcher --for=condition=ready pod -l app=rabbitmq --timeout=180s; then
+    echo "RabbitMQ is ready."
+    # Deploy Feed Fetcher
+    kubectl apply -f feed-fetcher-deployment.yaml
+    kubectl apply -f feed-fetcher-service.yaml
+else
+    echo "RabbitMQ is not ready within the timeout period. Exiting..."
+    ./k8s-delete.sh
+    exit 1
+fi
