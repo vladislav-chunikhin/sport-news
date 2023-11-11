@@ -19,7 +19,7 @@ RUN mkdir -p $(dirname ${OUTPUT_BINARY}) && \
 
 FROM alpine:3.18.3
 
-RUN apk add tzdata libc6-compat \
+RUN apk add tzdata libc6-compat && \
     apk add --no-cache curl
 
 WORKDIR /opt
