@@ -5,6 +5,7 @@ ARG PROJECT_PATH=.
 ARG OUTPUT_BINARY
 ARG BUILD_DIR
 ARG APP_PORT=8080
+ARG APP_MAINTENANCE_PORT=8082
 
 WORKDIR /app
 
@@ -18,7 +19,8 @@ RUN mkdir -p $(dirname ${OUTPUT_BINARY}) && \
 
 FROM alpine:3.18.3
 
-RUN apk add tzdata libc6-compat
+RUN apk add tzdata libc6-compat \
+    apk add --no-cache curl
 
 WORKDIR /opt
 
@@ -38,6 +40,6 @@ RUN adduser --disabled-password --gecos "" --home "$(pwd)" \
  && chmod +x ./binary
 USER 888
 
-EXPOSE $APP_PORT
+EXPOSE $APP_PORT $APP_MAINTENANCE_PORT
 
 CMD ["./binary"]

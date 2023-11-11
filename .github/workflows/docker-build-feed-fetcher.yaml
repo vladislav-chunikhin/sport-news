@@ -139,8 +139,7 @@ jobs:
           export RELATIVE_PATH=./feed-fetcher/deployment/k8s-test/
           ./feed-fetcher/deployment/k8s-test/k8s-apply.sh
           kubectl rollout -n feed-fetcher status deployment feed-fetcher
-          kubectl port-forward -n feed-fetcher svc/feed-fetcher 8082:31001
-          curl --fail http://localhost:8082/health/ready
+          kubectl -n feed-fetcher exec deploy/feed-fetcher -- curl --fail localhost:8082/health/ready
 
   # Build Final Image #######################################################################
   build-push-final-image:
