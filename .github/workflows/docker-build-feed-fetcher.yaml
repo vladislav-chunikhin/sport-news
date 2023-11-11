@@ -139,7 +139,9 @@ jobs:
           export RELATIVE_PATH=./feed-fetcher/deployment/k8s-test/
           ./feed-fetcher/deployment/k8s-test/k8s-apply.sh
           kubectl rollout -n feed-fetcher status deployment feed-fetcher
-          curl --fail feed-fetcher:31001/health/ready
+          IP=$(kubectl get svc/feed-fetcher -n feed-fetcher -o jsonpath='{.spec.clusterIP}')
+          echo "Service IP: $IP"
+          curl --fail http://$IP:31001/health/ready
 
   # Build Final Image #######################################################################
   build-push-final-image:
