@@ -138,7 +138,7 @@ jobs:
           export TEST_IMAGE=ghcr.io/vladislav-chunikhin/sport-news/feed-fetcher:"$GITHUB_RUN_ID"
           ./feed-fetcher/deployment/k8s-test/k8s-apply.sh
           kubectl rollout -n feed-fetcher status deployment feed-fetcher
-          curl --fail localhost:31001/health/ready
+          kubectl exec deploy/feed-fetcher -- curl --fail localhost:31001/health/ready
 
   # Build Final Image #######################################################################
   build-push-final-image:
