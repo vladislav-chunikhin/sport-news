@@ -136,10 +136,10 @@ jobs:
             --docker-username=${{ github.actor }} \
             --docker-password=${{ secrets.GITHUB_TOKEN }}
           export TEST_IMAGE=ghcr.io/vladislav-chunikhin/sport-news/feed-fetcher:"$GITHUB_RUN_ID"
+          export RELATIVE_PATH=./feed-fetcher/deployment/k8s-test/
           ./feed-fetcher/deployment/k8s-test/k8s-apply.sh
           kubectl rollout -n feed-fetcher status deployment feed-fetcher
-          NODE_IP=$(kubectl -n feed-fetcher get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}')
-          curl --fail $NODE_IP:31001/health/ready
+          curl --fail localhost:31001/health/ready
 
   # Build Final Image #######################################################################
   build-push-final-image:
