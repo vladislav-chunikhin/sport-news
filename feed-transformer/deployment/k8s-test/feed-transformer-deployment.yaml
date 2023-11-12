@@ -2,27 +2,27 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: feed-service
-  name: feed-service
-  namespace: feed-service
+    app: feed-transformer
+  name: feed-transformer
+  namespace: feed-transformer
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: feed-service
+      app: feed-transformer
   template:
     metadata:
       labels:
-        app: feed-service
+        app: feed-transformer
     spec:
       containers:
         - image: "${TEST_IMAGE}"
-          name: feed-service
+          name: feed-transformer
           env:
             - name: CONFIG_FILE
               value: "./config/docker.yaml"
           ports:
-            - containerPort: 8080
-              name: fetcher-service
-            - containerPort: 8082
-              name: fetcher-debug
+            - containerPort: 8088
+              name: transf-service
+            - containerPort: 8090
+              name: transf-debug

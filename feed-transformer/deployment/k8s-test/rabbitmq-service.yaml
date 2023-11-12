@@ -4,7 +4,7 @@ metadata:
   labels:
     app: rabbitmq
   name: rabbitmq
-  namespace: feed-fetcher
+  namespace: feed-transformer
 spec:
   type: ClusterIP
   ports:

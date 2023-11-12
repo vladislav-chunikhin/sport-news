@@ -2,35 +2,32 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: mongodb
-  name: mongodb
+    app: redis
+  name: redis
   namespace: feed-transformer
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mongodb
+      app: redis
   template:
     metadata:
       labels:
-        app: mongodb
+        app: redis
     spec:
       containers:
-        - image: mongo:6.0.8
-          name: mongodb
-          envFrom:
-            - configMapRef:
-                name: mongodb-config
+        - image: redis:7.0-alpine
+          name: redis
           ports:
-            - containerPort: 27017
-              name: mongodb
+            - containerPort: 6379
+              name: redis
           livenessProbe:
             tcpSocket:
-              port: 27017
+              port: 6379
             initialDelaySeconds: 30
             periodSeconds: 10
           readinessProbe:
             tcpSocket:
-              port: 27017
+              port: 6379
             initialDelaySeconds: 5
             periodSeconds: 5

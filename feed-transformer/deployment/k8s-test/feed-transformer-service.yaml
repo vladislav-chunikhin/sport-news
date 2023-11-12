@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: feed-transformer
+  name: feed-transformer
+  namespace: feed-transformer
+spec:
+  type: NodePort
+  ports:
+    - name: "transf-service"
+      port: 8088
+      targetPort: 8088
+      nodePort: 31004
+    - name: "transf-debug"
+      port: 8090
+      targetPort: 8090
+      nodePort: 31005
+  selector:
+    app: feed-transformer

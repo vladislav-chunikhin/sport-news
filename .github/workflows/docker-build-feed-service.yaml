@@ -140,6 +140,7 @@ jobs:
           ./feed-service/deployment/k8s-test/k8s-apply.sh
           kubectl rollout -n feed-service status deployment feed-service
           kubectl -n feed-service exec deploy/feed-service -- curl --fail localhost:8086/health/ready
+          kubectl -n feed-service exec deploy/feed-service -- curl --fail localhost:8084/api/feed/v1/news?limit=5
 
   # Build Final Image #######################################################################
   build-push-final-image:
