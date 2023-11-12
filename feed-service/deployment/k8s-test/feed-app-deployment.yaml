@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: feed-service
+  name: feed-service
+  namespace: feed-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: feed-service
+  template:
+    metadata:
+      labels:
+        app: feed-service
+    spec:
+      containers:
+        - image: "${TEST_IMAGE}"
+          name: feed-service
+          env:
+            - name: CONFIG_FILE
+              value: "./config/docker.yaml"
+          ports:
+            - containerPort: 8084
+              name: feed-service
+            - containerPort: 8086
+              name: feed-debug

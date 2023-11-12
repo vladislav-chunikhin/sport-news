@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: rabbitmq
+  name: rabbitmq
+  namespace: feed-transformer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+        - image: rabbitmq:3.9-alpine
+          name: rabbitmq
+          envFrom:
+            - configMapRef:
+                name: rabbitmq-config
+          ports:
+            - containerPort: 5672
+              name: rabbitmq
+          livenessProbe:
+            exec:
+              command:
+                - "rabbitmqctl"
+                - "ping"
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - "rabbitmqctl"
+                - "status"
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3

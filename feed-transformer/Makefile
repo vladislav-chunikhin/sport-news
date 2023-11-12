@@ -1,28 +1,6 @@
 ifneq ("$(wildcard .env)","")
     include .env
-    export
 endif
-
-APP_NAME ?= feed-transformer
-PROJECT_NAME ?= sport-news
-APP_VERSION ?= local
-APP_PORT ?= 8088
-APP_MAINTENANCE_PORT ?= 8090
-
-BUILD_DIR ?= "./cmd/app"
-OUTPUT_BINARY ?= "build/output/main"
-DOCKERFILE_NAME ?= build/Dockerfile
-
-MONGO_USERNAME ?= vlad
-MONGO_PASSWORD ?= sport
-MONGO_PORT ?= 27017
-
-RABBITMQ_USERNAME ?= vlad
-RABBITMQ_PASSWORD ?= sport
-RABBITMQ_PORT ?= 5672
-RABBITMQ_UI_PORT ?= 15672
-
-REDIS_PORT ?= 6379
 
 .PHONY: help
 all: help
@@ -44,11 +22,11 @@ services=
 .PHONY: deploy
 deploy: ## Deploy the service with its dependencies. You can deploy custom containers using the 'services' variable. Example: make deploy services='rabbitmq mongodb redis'
 	@echo 'Deploying containers: $(services)'
-	docker-compose -f ./deployment/docker-compose.yaml -p ${APP_NAME} up -d $(services)
+	docker-compose -f ./deployment/docker-compose.yaml --env-file .env -p ${APP_NAME} up -d $(services)
 
 .PHONY: delete
 delete: ## Delete the deployed service
-	@docker-compose -f ./deployment/docker-compose.yaml -p ${APP_NAME} rm -sf
+	@docker-compose -f ./deployment/docker-compose.yaml --env-file .env -p ${APP_NAME} rm -sf
 
 .PHONY: test-unit
 test-unit: ## Run unit tests
@@ -58,3 +36,9 @@ test-unit: ## Run unit tests
 .PHONY: coverage
 coverage: ## Show coverage
 	@go tool cover -html=cover.out
+
+# Delete image
+.PHONY: delete-image
+delete-image: ## Delete image
+	@echo 'Deleting the image'
+	docker rmi ${PROJECT_NAME}/${APP_NAME}:${APP_VERSION}

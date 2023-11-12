@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: feed-fetcher
+  name: feed-fetcher
+  namespace: feed-fetcher
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: feed-fetcher
+  template:
+    metadata:
+      labels:
+        app: feed-fetcher
+    spec:
+      containers:
+        - image: "${TEST_IMAGE}"
+          name: feed-fetcher
+          env:
+            - name: CONFIG_FILE
+              value: "./config/docker.yaml"
+          ports:
+            - containerPort: 8080
+              name: fetcher-service
+            - containerPort: 8082
+              name: fetcher-debug
