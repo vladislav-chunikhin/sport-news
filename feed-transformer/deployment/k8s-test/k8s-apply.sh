@@ -40,6 +40,7 @@ if kubectl wait --namespace feed-transformer --for=condition=ready pod -l app=ra
         # Wait for Redis to be ready
         echo "Waiting for Redis to become ready..."
         if kubectl wait --namespace feed-transformer --for=condition=ready pod -l app=redis --timeout=180s; then
+            echo "Redis is ready."
 
             # Deploy Feed transformer
             envsubst < "${RELATIVE_PATH}feed-transformer-deployment.yaml" | kubectl apply -f -
