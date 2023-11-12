@@ -34,7 +34,7 @@ Docker-compose is used for deployment
 
 1. Create an environment variables file in the root directory
 ```text
-cp ./.env.dict ./.env
+./.env
 ```
 
 2. Change environment variables if you need
